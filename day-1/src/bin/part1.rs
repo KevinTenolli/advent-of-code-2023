@@ -27,7 +27,7 @@ fn get_line_sum(line: &str) -> i32 {
     let mut queue: VecDeque<i32> = VecDeque::new();
     for (_, ch) in line.chars().enumerate() {
         if ch.is_numeric() {
-            queue.push_front(ch.to_string().parse().unwrap());
+            queue.push_back(ch.to_string().parse().unwrap());
         }
     }
 
@@ -37,6 +37,6 @@ fn get_line_sum(line: &str) -> i32 {
             let val = queue.pop_back().unwrap();
             val * 10 + val
         }
-        _ => queue.pop_back().unwrap() * 10 + queue.pop_front().unwrap(),
+        _ => queue.pop_front().unwrap() * 10 + queue.pop_back().unwrap(),
     }
 }
