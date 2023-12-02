@@ -15,7 +15,7 @@ fn main() {
     println!("{}",result);
 }
 fn get_cube_power(data: &str) -> u32 {
-    let mut rgb_cubes_for_round = [0; 3];
+    let mut rgb_cubes_for_game = [0; 3];
     for round in data.split(";") {
         for cube in round.split(",") {
             let index = match cube {
@@ -24,12 +24,12 @@ fn get_cube_power(data: &str) -> u32 {
                 _ => 2,
             };
             let no_of_cubes = get_number(cube);
-            if no_of_cubes > rgb_cubes_for_round[index] {
-                rgb_cubes_for_round[index] = no_of_cubes
+            if no_of_cubes > rgb_cubes_for_game[index] {
+                rgb_cubes_for_game[index] = no_of_cubes
             }
         }
     }
-    rgb_cubes_for_round.iter().fold(1, |acc, &x| acc * x)
+    rgb_cubes_for_game.iter().fold(1, |acc, &x| acc * x)
 }
 
 fn get_number(st: &str) -> u32 {
