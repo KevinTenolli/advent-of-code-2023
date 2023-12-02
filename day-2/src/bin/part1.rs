@@ -18,29 +18,24 @@ fn main() {
     }
     println!("{}",result);
 }
+fn is_game_possible(data: &str, rgb_cubes: &[u32; 3]) -> bool {
+    for round in data.split(";") {
+        let mut rgb_cubes_for_round = [0; 3];
 
-fn is_game_possible(data: &str,rgb_cubes: &[u32;3]) -> bool {
-    let rounds: Vec<&str> = data.split(";").collect();
-    for round in rounds {
-    let mut rgb_cubes_for_round = [0;3];
-        let cubes:Vec<&str> = round.split(",").collect();
-        for cube in cubes {
-            let mut index;
-            if cube.contains("red") {
-                index = 0
-            } else if cube.contains("green") {
-                index = 1;
-            } else {
-                index = 2;
-            }
-            let number = get_number(cube);
-            rgb_cubes_for_round[index] = number.to_string().parse().unwrap();
+        for cube in round.split(",") {
+            let index = match cube {
+                c if c.contains("red") => 0,
+                c if c.contains("green") => 1,
+                _ => 2,
+            };
+
+            rgb_cubes_for_round[index] = get_number(cube);
         }
-        if rgb_cubes_for_round[0] > rgb_cubes[0]{
-            return false;
-        } else if  rgb_cubes_for_round[1] > rgb_cubes[1]{
-            return false;
-        } else if  rgb_cubes_for_round[2] > rgb_cubes[2] {
+
+        if rgb_cubes_for_round[0] > rgb_cubes[0]
+            || rgb_cubes_for_round[1] > rgb_cubes[1]
+            || rgb_cubes_for_round[2] > rgb_cubes[2]
+        {
             return false;
         }
     }
