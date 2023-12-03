@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
 
@@ -27,6 +28,7 @@ fn get_symbol_locations(file: File) -> Vec<(u32, u32)> {
 }
 
 fn get_number_results(file: File, char_positions: Vec<(u32, u32)>) -> u32 {
+    let mut map: HashMap<(u32,u32), u32> = HashMap::new();
     let mut result = 0;
     let mut last = 0;
     let reader = io::BufReader::new(file);
@@ -42,8 +44,8 @@ fn get_number_results(file: File, char_positions: Vec<(u32, u32)>) -> u32 {
                         {
                             let rs = find_whole_number(&line, char_idx);
                             if rs != last {
-                                result += rs;
                                 last = rs;
+                                result += rs;
                             }
 
                         }
