@@ -28,27 +28,18 @@ fn get_symbol_locations(file: File) -> Vec<(u32, u32)> {
 }
 
 fn get_number_results(file: File, char_positions: Vec<(u32, u32)>) -> u32 {
-    let mut map: HashMap<(u32,u32), u32> = HashMap::new();
     let mut result = 0;
     let mut last = 0;
     let reader = io::BufReader::new(file);
-    let mut length_of_line;
     for (line_idx, line_result) in reader.lines().enumerate() {
         if let Ok(line) = line_result {
-            length_of_line = line.len() as u32;
-            for (char_idx, ch) in line.chars().enumerate() {
-                if ch.is_digit(10){
-                    let curr_idx = (char_idx as u32, line_idx as u32);
-                    for el in &char_positions {
-                        if el.0.abs_diff(curr_idx.0) < 2 && el.1.abs_diff(curr_idx.1) < 2
-                        {
-                            let rs = find_whole_number(&line, char_idx);
-                            if rs != last {
-                                last = rs;
-                                result += rs;
-                            }
-
-                        }
+            for (char_idx, ch) in line.chars().enumerate().filter(|(_, ch)| ch.is_digit(10)) {
+                let curr_idx = (char_idx as u32, line_idx as u32);
+                if char_positions.iter().any(|el| el.0.abs_diff(curr_idx.0) < 2 && el.1.abs_diff(curr_idx.1) < 2) {
+                    let rs = find_whole_number(&line, char_idx);
+                    if rs != last {
+                        result += rs;
+                        last = rs;
                     }
                 }
             }
