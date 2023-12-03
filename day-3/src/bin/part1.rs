@@ -1,56 +1,78 @@
 use std::fs::File;
 use std::io::{self, BufRead};
-use std::path::Path;
-#[derive(Debug)]
-struct Block {
-    prev: Option<String>,
-    curr: Option<String>,
-    next: Option<String>
-}
-impl Block {
-    fn new() -> Block {
-        Block {
-            prev: None,
-            curr: None,
-            next: None
-        }
-    }
-    fn populate(&mut self, line: String) {
-        if self.prev.is_none() {
-            self.prev = Some(line);
-        } else if self.curr.is_none() {
-            self.curr = Some(line);
-        } else if self.next.is_none() {
-            self.next = Some(line);
-        }
-    }
-    fn shift_left(&mut self) {
-        if self.next.is_some() {
-            self.prev = self.curr.take();
-            self.curr = self.next.take();
-            self.next = None;
-        }
-    }
-}
+
 fn main() {
-    let mut result = 0;
-    let mut block = Block::new();
-    if let Ok(lines) = read_lines("./input.txt") {
-        for line in lines {
-            if let Ok(ip) = line {
-                block.shift_left();
-                block.populate(ip.clone());
-                dbg!(&block);
-            }
-        }
-    }
+    let file = File::open("./input.txt").expect("Error opening file");
+    let vector = get_symbol_locations(file);
+    let file = File::open("./input.txt").expect("Error opening file");
+    let result = get_number_results(file,vector);
     println!("{}", result);
 }
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-    where
-        P: AsRef<Path>,
-{
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
+
+fn get_symbol_locations(file: File) -> Vec<(u32, u32)> {
+    let mut symbol_indexes: Vec<(u32, u32)> = Vec::new();
+    let reader = io::BufReader::new(file);
+
+    for (line_idx, line_result) in reader.lines().enumerate() {
+        if let Ok(line) = line_result {
+            for (char_idx, ch) in line.chars().enumerate() {
+                if !ch.is_digit(10) && ch != '.' {
+                    symbol_indexes.push((char_idx as u32, line_idx as u32));
+                }
+            }
+        }
+    }
+    symbol_indexes
 }
+
+fn get_number_results(file: File, char_positions: Vec<(u32, u32)>) -> u32 {
+    let mut result = 0;
+    let mut last = 0;
+    let reader = io::BufReader::new(file);
+    let mut length_of_line;
+    for (line_idx, line_result) in reader.lines().enumerate() {
+        if let Ok(line) = line_result {
+            length_of_line = line.len() as u32;
+            for (char_idx, ch) in line.chars().enumerate() {
+                if ch.is_digit(10){
+                    let curr_idx = (char_idx as u32, line_idx as u32);
+                    for el in &char_positions {
+                        if el == &(curr_idx.0, curr_idx.1 + 1)
+                            || (curr_idx.1 > 0 && el == &(curr_idx.0, curr_idx.1 - 1))
+                            || el == &(curr_idx.0 + 1, curr_idx.1)
+                            || (curr_idx.0 > 0 && el == &(curr_idx.0 - 1, curr_idx.1))
+                            || el == &(curr_idx.0 + 1, curr_idx.1 + 1)
+                            || (curr_idx.0 > 0 && curr_idx.1 > 0 && el == &(curr_idx.0 - 1, curr_idx.1 - 1))
+                            || (curr_idx.0 > 0 && el == &(curr_idx.0 - 1, curr_idx.1 + 1))
+                            || (curr_idx.1 > 0 && el == &(curr_idx.0 + 1, curr_idx.1 - 1))
+                        {
+                            let rs = find_whole_number(&line, char_idx);
+                            if rs != last {
+                                result += rs;
+                                last = rs;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+    result
+}
+
+fn find_whole_number(line: &str, index: usize) -> u32 {
+    let mut start_index = index;
+    let mut end_index = index;
+
+    while end_index < line.len() && line.chars().nth(end_index).unwrap().is_digit(10) {
+        end_index += 1;
+    }
+    while start_index > 0 && line.chars().nth(start_index - 1).unwrap().is_digit(10) {
+        start_index -= 1;
+    }
+    let whole_number: String = line[start_index..end_index].to_string();
+    whole_number.parse().unwrap_or(0)
+}
+
