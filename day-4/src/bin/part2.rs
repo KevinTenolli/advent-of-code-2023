@@ -9,7 +9,7 @@ fn main() {
     let mut total_tickets:u32 = 0;
     let mut idx:u32 = 1;
 
-    for (_, line_result) in reader.lines().enumerate() {
+    for line_result in reader.lines() {
         if let Ok(line) = line_result {
             let mut card_iterator = line.split(":").nth(1).unwrap().split("|").into_iter();
             //get how many cards in the future will get a bonus

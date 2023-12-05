@@ -6,7 +6,7 @@ fn main() {
     let file = File::open("./input.txt").expect("Error opening file");
     let reader = io::BufReader::new(file);
     let mut total_points = 0;
-    for (_, line_result) in reader.lines().enumerate() {
+    for line_result in reader.lines() {
         if let Ok(line) = line_result {
             let mut card_iterator = line.split(":").nth(1).unwrap().split("|").into_iter();
             total_points += get_line_result(card_iterator.next().unwrap(), card_iterator.next().unwrap());
