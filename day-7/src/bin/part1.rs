@@ -31,9 +31,9 @@ enum CardLabel {
 impl CardLabel {
     fn from_letter(letter: char) ->Option<CardLabel> {
         match letter {
+            '2' => Some(CardLabel::Two),
             '3' => Some(CardLabel::Three),
             '4' => Some(CardLabel::Four),
-            '2' => Some(CardLabel::Two),
             '5' => Some(CardLabel::Five),
             '6' => Some(CardLabel::Six),
             '7' => Some(CardLabel::Seven),
@@ -106,14 +106,15 @@ fn main() {
 fn add_card_to_list(list: &mut Vec<CardHand>, card_hand: CardHand) {
     let mut insert_position = None;
     for (i, existing_hand) in list.iter().enumerate() {
-        if existing_hand.hand_type > card_hand.hand_type {
+        if card_hand.hand_type < existing_hand.hand_type {
             insert_position = Some(i);
-            break;
-        } else if existing_hand.hand_type == card_hand.hand_type {
+        } else if card_hand.hand_type == existing_hand.hand_type {
             match is_new_hand_bigger(&card_hand.hand, &existing_hand.hand){
                 false => insert_position = Some(i),
-                true => insert_position = Some(i+1),
+                true => insert_position = None,
             }
+        }
+        if insert_position != None {
             break;
         }
     }
