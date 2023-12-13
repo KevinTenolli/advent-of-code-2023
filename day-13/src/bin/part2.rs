@@ -88,10 +88,7 @@ fn check_for_mirror(lines: &Vec<&str>, line_index: usize) -> bool {
             break;
         }
     }
-    match is_equal {
-        true => true,
-        false => false,
-    }
+    is_equal
 }
 
 fn is_off_by_one(str1: &str, str2: &str) -> bool {
