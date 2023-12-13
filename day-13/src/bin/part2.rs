@@ -66,7 +66,7 @@ fn find_horizontal_mirror(block: &str) -> usize {
         let next_line = if line_index < lines.len() - 1 { Some(lines[line_index + 1]) } else { None };
         if let Some(next_line_content) = next_line {
              if *line == next_line_content || is_off_by_one(&line, &next_line_content) {
-                if let Some(_result) = check_for_mirror(&lines, line_index) {
+                if  check_for_mirror(&lines, line_index) {
                     return line_index + 1;
                 }
             }
@@ -75,7 +75,7 @@ fn find_horizontal_mirror(block: &str) -> usize {
     0
 }
 
-fn check_for_mirror(lines: &Vec<&str>, line_index: usize) -> Option<usize> {
+fn check_for_mirror(lines: &Vec<&str>, line_index: usize) -> bool {
     let mut left_index = line_index as i32 - 1;
     let mut right_index = line_index + 2;
     let mut is_equal = true;
@@ -89,8 +89,8 @@ fn check_for_mirror(lines: &Vec<&str>, line_index: usize) -> Option<usize> {
         }
     }
     match is_equal {
-        true => Some(line_index + 1),
-        false => None,
+        true => true,
+        false => false,
     }
 }
 
